@@ -8,19 +8,18 @@
  * do proper ghost mechanics (blinky/wimpy etc)
  */
 
-Pacman      = {};
-
-Pacman.NONE        = 4;
-Pacman.UP          = 3;
-Pacman.LEFT        = 2;
-Pacman.DOWN        = 1;
-Pacman.RIGHT       = 11;
-Pacman.WAITING     = 5;
-Pacman.PAUSE       = 6;
-Pacman.PLAYING     = 7;
-Pacman.COUNTDOWN   = 8;
-Pacman.EATEN_PAUSE = 9;
-Pacman.DYING       = 10;
+var NONE        = 4,
+    UP          = 3,
+    LEFT        = 2,
+    DOWN        = 1,
+    RIGHT       = 11,
+    WAITING     = 5,
+    PAUSE       = 6,
+    PLAYING     = 7,
+    COUNTDOWN   = 8,
+    EATEN_PAUSE = 9,
+    DYING       = 10,
+    Pacman      = {};
 
 Pacman.FPS = 30;
 
@@ -35,8 +34,8 @@ Pacman.Ghost = function (game, map, colour) {
     function getNewCoord(dir, current) { 
         
         var speed  = isVunerable() ? 1 : isHidden() ? 4 : 2,
-            xSpeed = (dir === Pacman.LEFT && -speed || dir === Pacman.RIGHT && speed || 0),
-            ySpeed = (dir === Pacman.DOWN && speed || dir === Pacman.UP && -speed || 0);
+            xSpeed = (dir === LEFT && -speed || dir === RIGHT && speed || 0),
+            ySpeed = (dir === DOWN && speed || dir === UP && -speed || 0);
     
         return {
             "x": addBounded(current.x, xSpeed),
@@ -71,8 +70,8 @@ Pacman.Ghost = function (game, map, colour) {
     };
     
     function getRandomDirection() {
-        var moves = (direction === Pacman.LEFT || direction === Pacman.RIGHT) 
-            ? [Pacman.UP, Pacman.DOWN] : [Pacman.LEFT, Pacman.RIGHT];
+        var moves = (direction === LEFT || direction === RIGHT) 
+            ? [UP, DOWN] : [LEFT, RIGHT];
         return moves[Math.floor(Math.random() * 2)];
     };
     
@@ -89,9 +88,9 @@ Pacman.Ghost = function (game, map, colour) {
     };
     
     function oppositeDirection(dir) { 
-        return dir === Pacman.LEFT && Pacman.RIGHT ||
-            dir === Pacman.RIGHT && Pacman.LEFT ||
-            dir === Pacman.UP && Pacman.DOWN || Pacman.UP;
+        return dir === LEFT && RIGHT ||
+            dir === RIGHT && LEFT ||
+            dir === UP && DOWN || UP;
     };
 
     function makeEatable() {
@@ -112,7 +111,7 @@ Pacman.Ghost = function (game, map, colour) {
         var rem = x % 10;
         if (rem === 0) { 
             return x; 
-        } else if (dir === Pacman.RIGHT || dir === Pacman.DOWN) { 
+        } else if (dir === RIGHT || dir === DOWN) { 
             return x + (10 - rem);
         } else {
             return x - rem;
@@ -188,10 +187,10 @@ Pacman.Ghost = function (game, map, colour) {
 
         var f = s / 12;
         var off = {};
-        off[Pacman.RIGHT] = [f, 0];
-        off[Pacman.LEFT]  = [-f, 0];
-        off[Pacman.UP]    = [0, -f];
-        off[Pacman.DOWN]  = [0, f];
+        off[RIGHT] = [f, 0];
+        off[LEFT]  = [-f, 0];
+        off[UP]    = [0, -f];
+        off[DOWN]  = [0, f];
 
         ctx.beginPath();
         ctx.fillStyle = "#000";
@@ -206,11 +205,11 @@ Pacman.Ghost = function (game, map, colour) {
 
     function pane(pos) {
 
-        if (pos.y === 100 && pos.x >= 190 && direction === Pacman.RIGHT) {
+        if (pos.y === 100 && pos.x >= 190 && direction === RIGHT) {
             return {"y": 100, "x": -10};
         }
         
-        if (pos.y === 100 && pos.x <= -10 && direction === Pacman.LEFT) {
+        if (pos.y === 100 && pos.x <= -10 && direction === LEFT) {
             return position = {"y": 100, "x": 190};
         }
 
@@ -287,10 +286,10 @@ Pacman.User = function (game, map) {
         score     = 5,
         keyMap    = {};
     
-    keyMap[KEY2.ARROW_LEFT]  = Pacman.LEFT;
-    keyMap[KEY2.ARROW_UP]    = Pacman.UP;
-    keyMap[KEY2.ARROW_RIGHT] = Pacman.RIGHT;
-    keyMap[KEY2.ARROW_DOWN]  = Pacman.DOWN;
+    keyMap[KEY.ARROW_LEFT]  = LEFT;
+    keyMap[KEY.ARROW_UP]    = UP;
+    keyMap[KEY.ARROW_RIGHT] = RIGHT;
+    keyMap[KEY.ARROW_DOWN]  = DOWN;
 
     function addScore(nScore) { 
         score += nScore;
@@ -310,27 +309,25 @@ Pacman.User = function (game, map) {
     function getLives() {
         return lives;
     };
+	
+	function visionHandler(e, label){
+		if(label == "up"){
+			due = UP;
+		} else if(label == "down"){
+			due = DOWN;
+		} else if(label == "left"){
+			due = LEFT;
+		} else if(label == "right"){
+			due = RIGHT;
+		}
+	}
 
     function initUser() {
         score = 0;
         lives = 3;
         newLevel();
-		
 		$.subscribe("/vision", visionHandler);
     }
-	
-	function visionHandler(e, visionDirection) {
-		console.log(visionDirection);
-		if(visionDirection == 'left'){
-			due = Pacman.LEFT;
-		}else if(visionDirection == 'right') {
-			due = Pacman.RIGHT;
-		}else if(visionDirection == 'up') {
-			due = Pacman.UP;
-		}else if(visionDirection == 'down') {
-			due = Pacman.DOWN;
-		}
-	}
     
     function newLevel() {
         resetPosition();
@@ -339,8 +336,8 @@ Pacman.User = function (game, map) {
     
     function resetPosition() {
         position = {"x": 90, "y": 120};
-        direction = Pacman.LEFT;
-        due = Pacman.LEFT;
+        direction = LEFT;
+        due = LEFT;
     };
     
     function reset() {
@@ -360,8 +357,8 @@ Pacman.User = function (game, map) {
 
     function getNewCoord(dir, current) {   
         return {
-            "x": current.x + (dir === Pacman.LEFT && -2 || dir === Pacman.RIGHT && 2 || 0),
-            "y": current.y + (dir === Pacman.DOWN && 2 || dir === Pacman.UP    && -2 || 0)
+            "x": current.x + (dir === LEFT && -2 || dir === RIGHT && 2 || 0),
+            "y": current.y + (dir === DOWN && 2 || dir === UP    && -2 || 0)
         };
     };
 
@@ -377,7 +374,7 @@ Pacman.User = function (game, map) {
         var rem = x % 10;
         if (rem === 0) { 
             return x; 
-        } else if (dir === Pacman.RIGHT || dir === Pacman.DOWN) { 
+        } else if (dir === RIGHT || dir === DOWN) { 
             return x + (10 - rem);
         } else {
             return x - rem;
@@ -396,10 +393,10 @@ Pacman.User = function (game, map) {
     };
 
     function isOnSamePlane(due, dir) { 
-        return ((due === Pacman.LEFT || due === Pacman.RIGHT) && 
-                (dir === Pacman.LEFT || dir === Pacman.RIGHT)) || 
-            ((due === Pacman.UP || due === Pacman.DOWN) && 
-             (dir === Pacman.UP || dir === Pacman.DOWN));
+        return ((due === LEFT || due === RIGHT) && 
+                (dir === LEFT || dir === RIGHT)) || 
+            ((due === UP || due === DOWN) && 
+             (dir === UP || dir === DOWN));
     };
 
     function move(ctx) {
@@ -426,18 +423,18 @@ Pacman.User = function (game, map) {
         }
         
         if (onGridSquare(position) && map.isWallSpace(next(npos, direction))) {
-            direction = Pacman.NONE;
+            direction = NONE;
         }
 
-        if (direction === Pacman.NONE) {
+        if (direction === NONE) {
             return {"new" : position, "old" : position};
         }
         
-        if (npos.y === 100 && npos.x >= 190 && direction === Pacman.RIGHT) {
+        if (npos.y === 100 && npos.x >= 190 && direction === RIGHT) {
             npos = {"y": 100, "x": -10};
         }
         
-        if (npos.y === 100 && npos.x <= -12 && direction === Pacman.LEFT) {
+        if (npos.y === 100 && npos.x <= -12 && direction === LEFT) {
             npos = {"y": 100, "x": 190};
         }
         
@@ -474,13 +471,13 @@ Pacman.User = function (game, map) {
     };
 
     function calcAngle(dir, pos) { 
-        if (dir == Pacman.RIGHT && (pos.x % 10 < 5)) {
+        if (dir == RIGHT && (pos.x % 10 < 5)) {
             return {"start":0.25, "end":1.75, "direction": false};
-        } else if (dir === Pacman.DOWN && (pos.y % 10 < 5)) { 
+        } else if (dir === DOWN && (pos.y % 10 < 5)) { 
             return {"start":0.75, "end":2.25, "direction": false};
-        } else if (dir === Pacman.UP && (pos.y % 10 < 5)) { 
+        } else if (dir === UP && (pos.y % 10 < 5)) { 
             return {"start":1.25, "end":1.75, "direction": true};
-        } else if (dir === Pacman.LEFT && (pos.x % 10 < 5)) {             
+        } else if (dir === LEFT && (pos.x % 10 < 5)) {             
             return {"start":0.75, "end":1.25, "direction": true};
         }
         return {"start":0, "end":2, "direction": false};
@@ -788,7 +785,7 @@ Pacman.Audio = function(game) {
 
 var PACMAN = (function () {
 
-    var state        = Pacman.WAITING,
+    var state        = WAITING,
         audio        = null,
         ghosts       = [],
         ghostSpecs   = ["#00FFDE", "#FF0000", "#FFB8DE", "#FFB847"],
@@ -836,11 +833,11 @@ var PACMAN = (function () {
         }
         audio.play("start");
         timerStart = tick;
-        setState(Pacman.COUNTDOWN);
+        setState(COUNTDOWN);
     }    
 
     function startNewGame() {
-        setState(Pacman.WAITING);
+        setState(WAITING);
         level = 1;
         user.reset();
         map.reset();
@@ -849,29 +846,29 @@ var PACMAN = (function () {
     }
 
     function keyDown(e) {
-        if (e.keyCode === KEY2.N) {
+        if (e.keyCode === KEY.N) {
             startNewGame();
-        } else if (e.keyCode === KEY2.S) {
+        } else if (e.keyCode === KEY.S) {
             audio.disableSound();
             localStorage["soundDisabled"] = !soundDisabled();
-        } else if (e.keyCode === KEY2.P && state === Pacman.PAUSE) {
+        } else if (e.keyCode === KEY.P && state === PAUSE) {
             audio.resume();
             map.draw(ctx);
             setState(stored);
-        } else if (e.keyCode === KEY2.P) {
+        } else if (e.keyCode === KEY.P) {
             stored = state;
-            setState(Pacman.PAUSE);
+            setState(PAUSE);
             audio.pause();
             map.draw(ctx);
             dialog("Paused");
-        } else if (state !== Pacman.PAUSE) {   
+        } else if (state !== PAUSE) {   
             return user.keyDown(e);
         }
         return true;
     }    
 
     function loseLife() {        
-        setState(Pacman.WAITING);
+        setState(WAITING);
         user.loseLife();
         if (user.getLives() > 0) {
             startLevel();
@@ -912,7 +909,7 @@ var PACMAN = (function () {
 
         ctx.fillStyle = !soundDisabled() ? "#00FF00" : "#FF0000";
         ctx.font = "bold 16px sans-serif";
-        //ctx.fillText("♪", 10, textBase);
+        //ctx.fillText("â™ª", 10, textBase);
         ctx.fillText("s", 10, textBase);
 
         ctx.fillStyle = "#FFFF00";
@@ -958,11 +955,11 @@ var PACMAN = (function () {
                     nScore = eatenCount * 50;
                     drawScore(nScore, ghostPos[i]);
                     user.addScore(nScore);                    
-                    setState(Pacman.EATEN_PAUSE);
+                    setState(EATEN_PAUSE);
                     timerStart = tick;
                 } else if (ghosts[i].isDangerous()) {
                     audio.play("die");
-                    setState(Pacman.DYING);
+                    setState(DYING);
                     timerStart = tick;
                 }
             }
@@ -973,23 +970,23 @@ var PACMAN = (function () {
 
         var diff;
 
-        if (state !== Pacman.PAUSE) { 
+        if (state !== PAUSE) { 
             ++tick;
         }
 
         map.drawPills(ctx);
 
-        if (state === Pacman.PLAYING) {
+        if (state === PLAYING) {
             mainDraw();
-        } else if (state === Pacman.WAITING && stateChanged) {            
+        } else if (state === WAITING && stateChanged) {            
             stateChanged = false;
             map.draw(ctx);
             dialog("Press N to start a New game");            
-        } else if (state === Pacman.EATEN_PAUSE && 
+        } else if (state === EATEN_PAUSE && 
                    (tick - timerStart) > (Pacman.FPS / 3)) {
             map.draw(ctx);
-            setState(Pacman.PLAYING);
-        } else if (state === Pacman.DYING) {
+            setState(PLAYING);
+        } else if (state === DYING) {
             if (tick - timerStart > (Pacman.FPS * 2)) { 
                 loseLife();
             } else { 
@@ -1000,13 +997,13 @@ var PACMAN = (function () {
                 }                                   
                 user.drawDead(ctx, (tick - timerStart) / (Pacman.FPS * 2));
             }
-        } else if (state === Pacman.COUNTDOWN) {
+        } else if (state === COUNTDOWN) {
             
             diff = 5 + Math.floor((timerStart - tick) / Pacman.FPS);
             
             if (diff === 0) {
                 map.draw(ctx);
-                setState(Pacman.PLAYING);
+                setState(PLAYING);
             } else {
                 if (diff !== lastTime) { 
                     lastTime = diff;
@@ -1029,7 +1026,7 @@ var PACMAN = (function () {
     };
     
     function completedLevel() {
-        setState(Pacman.WAITING);
+        setState(WAITING);
         level += 1;
         map.reset();
         user.newLevel();
@@ -1037,12 +1034,11 @@ var PACMAN = (function () {
     };
 
     function keyPress(e) { 
-        if (state !== Pacman.WAITING && state !== Pacman.PAUSE) { 
+        if (state !== WAITING && state !== PAUSE) { 
             e.preventDefault();
             e.stopPropagation();
         }
     };
-	
     
     function init(wrapper, root) {
         
@@ -1113,24 +1109,24 @@ var PACMAN = (function () {
 }());
 
 /* Human readable keyCode index */
-var KEY2 = {'BACKSPACE': 8, 'TAB': 9, 'NUM_PAD_CLEAR': 12, 'ENTER': 13, 'SHIFT': 16, 'CTRL': 17, 'ALT': 18, 'PAUSE': 19, 'CAPS_LOCK': 20, 'ESCAPE': 27, 'SPACEBAR': 32, 'PAGE_UP': 33, 'PAGE_DOWN': 34, 'END': 35, 'HOME': 36, 'ARROW_LEFT': 37, 'ARROW_UP': 38, 'ARROW_RIGHT': 39, 'ARROW_DOWN': 40, 'PRINT_SCREEN': 44, 'INSERT': 45, 'DELETE': 46, 'SEMICOLON': 59, 'WINDOWS_LEFT': 91, 'WINDOWS_RIGHT': 92, 'SELECT': 93, 'NUM_PAD_ASTERISK': 106, 'NUM_PAD_PLUS_SIGN': 107, 'NUM_PAD_HYPHEN-MINUS': 109, 'NUM_PAD_FULL_STOP': 110, 'NUM_PAD_SOLIDUS': 111, 'NUM_LOCK': 144, 'SCROLL_LOCK': 145, 'SEMICOLON': 186, 'EQUALS_SIGN': 187, 'COMMA': 188, 'HYPHEN-MINUS': 189, 'FULL_STOP': 190, 'SOLIDUS': 191, 'GRAVE_ACCENT': 192, 'LEFT_SQUARE_BRACKET': 219, 'REVERSE_SOLIDUS': 220, 'RIGHT_SQUARE_BRACKET': 221, 'APOSTROPHE': 222};
+var KEY = {'BACKSPACE': 8, 'TAB': 9, 'NUM_PAD_CLEAR': 12, 'ENTER': 13, 'SHIFT': 16, 'CTRL': 17, 'ALT': 18, 'PAUSE': 19, 'CAPS_LOCK': 20, 'ESCAPE': 27, 'SPACEBAR': 32, 'PAGE_UP': 33, 'PAGE_DOWN': 34, 'END': 35, 'HOME': 36, 'ARROW_LEFT': 37, 'ARROW_UP': 38, 'ARROW_RIGHT': 39, 'ARROW_DOWN': 40, 'PRINT_SCREEN': 44, 'INSERT': 45, 'DELETE': 46, 'SEMICOLON': 59, 'WINDOWS_LEFT': 91, 'WINDOWS_RIGHT': 92, 'SELECT': 93, 'NUM_PAD_ASTERISK': 106, 'NUM_PAD_PLUS_SIGN': 107, 'NUM_PAD_HYPHEN-MINUS': 109, 'NUM_PAD_FULL_STOP': 110, 'NUM_PAD_SOLIDUS': 111, 'NUM_LOCK': 144, 'SCROLL_LOCK': 145, 'SEMICOLON': 186, 'EQUALS_SIGN': 187, 'COMMA': 188, 'HYPHEN-MINUS': 189, 'FULL_STOP': 190, 'SOLIDUS': 191, 'GRAVE_ACCENT': 192, 'LEFT_SQUARE_BRACKET': 219, 'REVERSE_SOLIDUS': 220, 'RIGHT_SQUARE_BRACKET': 221, 'APOSTROPHE': 222};
 
 (function () {
 	/* 0 - 9 */
 	for (var i = 48; i <= 57; i++) {
-        KEY2['' + (i - 48)] = i;
+        KEY['' + (i - 48)] = i;
 	}
 	/* A - Z */
 	for (i = 65; i <= 90; i++) {
-        KEY2['' + String.fromCharCode(i)] = i;
+        KEY['' + String.fromCharCode(i)] = i;
 	}
 	/* NUM_PAD_0 - NUM_PAD_9 */
 	for (i = 96; i <= 105; i++) {
-        KEY2['NUM_PAD_' + (i - 96)] = i;
+        KEY['NUM_PAD_' + (i - 96)] = i;
 	}
 	/* F1 - F12 */
 	for (i = 112; i <= 123; i++) {
-        KEY2['F' + (i - 112 + 1)] = i;
+        KEY['F' + (i - 112 + 1)] = i;
 	}
 })();
 

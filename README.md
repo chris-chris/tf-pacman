@@ -13,3 +13,9 @@ https://chris-chris.ai/pacman/index.html
 7. pacman 폴더 안에 tf-pacman 예제 넣고
 8. pacman/my_model에 학습시킨 teachable machine 의 모델 붙여넣기
 9. [본인의 github id].github.io/pacman/index.html 접속
+
+[사용한 패턴]
+
+Publisher & Subcriber Pattern - jQuery Tiny Pub/Sub
+
+https://gist.github.com/cowboy/661855
